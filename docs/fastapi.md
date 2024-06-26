@@ -43,4 +43,6 @@ fastapi路径操作装饰器方法参数
 )
 ```
 
+[code](../little_demo/fastapi/route_decorator.py)
+
 ### 路由分发
