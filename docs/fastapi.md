@@ -265,5 +265,10 @@ app.mount("/statics",StaticFiles(directory="statics"))
 
 #### response_model
 
-之前都是return字典，而FastApi提供了response_model参数，用于声明return的响应体的模型。
+之前都是return字典，而FastApi提供了response_model参数，用于声明return的响应体的模型，其为装饰器的参数。
 
+```python
+@app.post("/items",response_model=Item)
+async def create_item(item:Item):
+    ...
+```
