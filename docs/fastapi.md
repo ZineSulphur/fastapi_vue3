@@ -8,7 +8,7 @@
 
 其中使用fastapi启动程序，然后在main函数中使用uvicorn.run启动web页面，然后我们可以使用get方法来得到一些数据，验证自己的代码。
 
-[code](../little_demo/fastapi/quickstart.py)
+[代码文件01](../little_demo/fastapi/quickstart.py)
 
 ## 路径操作
 
@@ -43,7 +43,7 @@ fastapi路径操作装饰器方法参数
 )
 ```
 
-[code](../little_demo/fastapi/route_decorator.py)
+[代码文件0201](../little_demo/fastapi/route_decorator.py)
 
 ### 路由分发
 
@@ -96,6 +96,8 @@ if __name__ == '__main__':
     uvicorn.run("main:app")
 ```
 
+[代码文件0202](../little_demo/fastapi/include_router/main.py)
+
 ## 请求与响应
 
 ### 路径参数
@@ -130,6 +132,8 @@ def get_user(user_id):
     return {"user_id" : user_id}
 ```
 
+[代码文件0301](../little_demo/fastapi/request_and_response/apps/app01.py)
+
 ### 查询参数
 
 当路径函数中声明了不是路径参数的其它参数时，将会自动解释成查询字符串参数，就是url中?后用&分割的键值对。
@@ -143,6 +147,8 @@ async def search_jobs(kd:str,city:Union[str, None] = None, xl:Optional[str] = No
 ```
 
 其中city和xl在路径参数"/jobs/{kd}"不存在，它们就被解释为查询参数。
+
+[代码文件0302](../little_demo/fastapi/request_and_response/apps/app02.py)
 
 ### 请求体数据
 
@@ -184,6 +190,8 @@ async def data(data:Data):
     return data
 ```
 
+[代码文件0303](../little_demo/fastapi/request_and_response/apps/app03.py)
+
 ### form表单
 
 FastApi可以使用Form组件接受form表单，用来接收密码流等更适合使用表单字段的内容。
@@ -194,3 +202,68 @@ async def reg(username:str=Form(),password:str=Form()):
     print(f"username:{username},password:{password}")
     return {"username":username}
 ```
+
+[代码文件0304](../little_demo/fastapi/request_and_response/apps/app04.py)
+
+### 文件上传
+
+Fastapi可以使用File和UploadFile进行文件上传
+
+```python
+@app05.post("/file")
+async def get_file(file:bytes = File()):
+    print(file)
+    return {"file":len(file)}
+
+@app05.post("/files")
+async def get_files(files:list[bytes] = File()):
+    for file in files:
+        print(len(file))
+    return {"file":len(files)}
+
+@app05.post("/uploadFile")
+async def get_uploadFile(file:UploadFile):
+    print(file)
+    return {"file":file.filename}
+
+@app05.post("/uploadFiles")
+async def get_uploadFiles(files:list[UploadFile]):
+    return {"names":[file.filename for file in files]}
+```
+
+[代码文件0305](../little_demo/fastapi/request_and_response/apps/app05.py)
+
+### Request对象
+
+有时我们想要直接访问Request对象，获得url、cookie、session、header等信息，我们只需要在函数中声明Request类型参数，Fastapi就会自动传递相关信息进去，让我们获取其中下信息。
+
+```python
+@app06.post("/items")
+async def items(request:Request):
+    return {"URL":request.url,
+            "IP":request.client.host,
+            "user-agent":request.headers.get("user-agent"),
+            "cookies":request.cookies}
+```
+
+[代码文件0306](../little_demo/fastapi/request_and_response/apps/app06.py)
+
+### 请求静态文件
+
+不是有web服务器生成的文件为静态文件，如CSS/JS、文件等。
+
+```python
+app = FastAPI()
+app.mount("/statics",StaticFiles(directory="statics"))
+```
+
+运行服务器后就可以在`http://127.0.0.1:8000/statics/`读取对应静态文件
+
+如`http://127.0.0.1:8000/statics/css/common.css`读取/statics/css/common.css文件
+
+### 响应模型参数
+
+#### response_model
+
+之前都是return字典，而FastApi提供了response_model参数，用于声明return的响应体的模型。
+
