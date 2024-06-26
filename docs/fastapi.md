@@ -46,3 +46,52 @@ fastapi路径操作装饰器方法参数
 [code](../little_demo/fastapi/route_decorator.py)
 
 ### 路由分发
+
+通过include_router将路由分发给各个子系统
+
+对于下面系统而言
+
+- apps
+- - app1
+- - - urls.py
+- - - ....py
+- - app2
+- - - urls.py
+- - - ....py
+- main.py
+
+我们将这个apps拆分成app1和app2，然后我们在子系统中使用APIRouter，母系统中使用include_router即可实现分发。
+
+其中prefix是路由前缀，不用在子路由里面写。
+
+urls.py
+```python
+from fastapi import APIRouter
+
+shop = APIRouter()
+
+@shop.get("/food")
+def shop_food():
+    return {"shop":"food"}
+
+@shop.get("/bed")
+def shop_bed():
+    return {"shop":"bed"}
+```
+
+main.py
+```python
+from fastapi import FastAPI
+import uvicorn
+
+from app1.urls import shop
+from app2.urls import user
+
+app = FastAPI
+
+app.include_router(shop,prefix="/shop",tags=["shop接口"])
+app.include_router(user,prefix="/user",tags=["user接口"])
+
+if __name__ == '__main__':
+    uvicorn.run("main:app")
+```
