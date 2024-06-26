@@ -95,3 +95,102 @@ app.include_router(user,prefix="/user",tags=["user接口"])
 if __name__ == '__main__':
     uvicorn.run("main:app")
 ```
+
+## 请求与响应
+
+### 路径参数
+
+这里的路径参数指装饰器的参数path，使用与Python格式化字符串相同的语法来声明路径参数或变量。
+
+```python
+@app.get("/user/{user_id}")
+def get_user(user_id):
+    return {"user_id" : user_id}
+```
+
+参数的默认类型为str，我们也可以自己指定类型
+
+```python
+@app.get("/user/{user_id}")
+def get_user(user_id:int):
+    return {"user_id" : user_id}
+```
+
+同时参数匹配也是有顺序的，会优先匹配先出现的部分。
+
+如下部分id为1时会得到root user而不是1.
+
+```python
+@app01.get("/user/1")
+def get_user(user_id):
+    return {"user_id":"root user"}
+
+@app.get("/user/{user_id}")
+def get_user(user_id):
+    return {"user_id" : user_id}
+```
+
+### 查询参数
+
+当路径函数中声明了不是路径参数的其它参数时，将会自动解释成查询字符串参数，就是url中?后用&分割的键值对。
+
+```python
+@app.get("/jobs/{kd}")
+async def search_jobs(kd:str,city:Union[str, None] = None, xl:Optional[str] = None):
+    if city or xl
+        return {"kd":kd,"city":city,"xl":xl}
+    return {"kd":kd}
+```
+
+其中city和xl在路径参数"/jobs/{kd}"不存在，它们就被解释为查询参数。
+
+### 请求体数据
+
+请求体时客户端发给api的数据。响应体时api发给客户端的数据。
+
+FastAPI基于Pydantic，用来做类型强制检查即数据校验。正确时返回值，错误时返回错误信息。
+
+实际传输的数据在http的请求体body中，这里传送的json格式。同时FastApi会自动做部分类型的类型转换。
+
+```python
+class User(BaseModel):
+    # 带默认值，也可以不指定默认值
+    # name:str = "root"
+    name:str
+    age:int = Field(default=0,gt=0,lt=100) # Field 指定字段规则
+    birth:Union[date, None] = None
+    friends:list[int] = []
+    description:Optional[str] = None
+
+    # 校验name为字母
+    @field_validator("name")
+    def name_must_alpha(cls, value):
+        assert value.isalpha(),'name must be alpha'
+        return value
+    
+class Data(BaseModel):
+    # 嵌套User
+    data:list[User]
+
+@app03.post("/user")
+async def user(user:User):
+    print(user, type(user))
+    print(user.name)
+    print(user.model_dump())
+    return user
+
+@app03.post("/data")
+async def data(data:Data):
+    return data
+```
+
+### form表单
+
+FastApi可以使用Form组件接受form表单，用来接收密码流等更适合使用表单字段的内容。
+
+```python
+@app04.post("/regin")
+async def reg(username:str=Form(),password:str=Form()):
+    print(f"username:{username},password:{password}")
+    return {"username":username}
+```
