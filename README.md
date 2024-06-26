@@ -1,2 +1,15 @@
 # fastapi_vue3
 Learning notes and programs of fastapi and vue3
+
+## 文件结构
+
+- app
+fastapi后端代码
+- web
+vue3前端代码
+- docs
+学习笔记，程序文档等
+- little_demo
+学习的代码demo
+- - fastapi
+- - vue3
