@@ -729,3 +729,56 @@ for stu in stus4:
     print(stu)
 ```
 
+而对于用jinja2前端的响应体，我们可以这么写
+
+```python
+@student_api.get("/index.html")
+async def getAllStudent(request:Request):
+    templates = Jinja2Templates(directory="templates")
+    students = await Student.all()
+    return templates.TemplateResponse(
+        "index.html",{
+            "request":request,
+            "students":students
+        }
+    )
+```
+
+```html
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+</head>
+<body>
+    <h1>学生信息</h1>
+
+    <div class="row">
+        <div class="col-md-9">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>学生学号</th>
+                        <th>学生姓名</th>
+                        <th>学生班级</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.clas_id }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+##### 添加表记录
