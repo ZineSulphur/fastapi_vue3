@@ -8,7 +8,7 @@
 
 其中使用fastapi启动程序，然后在main函数中使用uvicorn.run启动web页面，然后我们可以使用get方法来得到一些数据，验证自己的代码。
 
-[代码文件01](../little_demo/fastapi/quickstart.py)
+[quickstart代码](../little_demo/fastapi/quickstart.py)
 
 ## 路径操作
 
@@ -43,7 +43,7 @@ fastapi路径操作装饰器方法参数
 )
 ```
 
-[代码文件0201](../little_demo/fastapi/route_decorator.py)
+[路径操作装饰器代码](../little_demo/fastapi/route_decorator.py)
 
 ### 路由分发
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     uvicorn.run("main:app")
 ```
 
-[代码文件0202](../little_demo/fastapi/include_router/main.py)
+[路由分发代码](../little_demo/fastapi/include_router/main.py)
 
 ## 请求与响应
 
@@ -132,7 +132,7 @@ def get_user(user_id):
     return {"user_id" : user_id}
 ```
 
-[代码文件0301](../little_demo/fastapi/request_and_response/apps/app01.py)
+[路径参数代码](../little_demo/fastapi/request_and_response/apps/app01.py)
 
 ### 查询参数
 
@@ -148,7 +148,7 @@ async def search_jobs(kd:str,city:Union[str, None] = None, xl:Optional[str] = No
 
 其中city和xl在路径参数"/jobs/{kd}"不存在，它们就被解释为查询参数。
 
-[代码文件0302](../little_demo/fastapi/request_and_response/apps/app02.py)
+[查询参数代码](../little_demo/fastapi/request_and_response/apps/app02.py)
 
 ### 请求体数据
 
@@ -190,7 +190,7 @@ async def data(data:Data):
     return data
 ```
 
-[代码文件0303](../little_demo/fastapi/request_and_response/apps/app03.py)
+[请求体代码](../little_demo/fastapi/request_and_response/apps/app03.py)
 
 ### form表单
 
@@ -203,7 +203,7 @@ async def reg(username:str=Form(),password:str=Form()):
     return {"username":username}
 ```
 
-[代码文件0304](../little_demo/fastapi/request_and_response/apps/app04.py)
+[form代码](../little_demo/fastapi/request_and_response/apps/app04.py)
 
 ### 文件上传
 
@@ -231,7 +231,7 @@ async def get_uploadFiles(files:list[UploadFile]):
     return {"names":[file.filename for file in files]}
 ```
 
-[代码文件0305](../little_demo/fastapi/request_and_response/apps/app05.py)
+[文件上传代码](../little_demo/fastapi/request_and_response/apps/app05.py)
 
 ### Request对象
 
@@ -246,7 +246,7 @@ async def items(request:Request):
             "cookies":request.cookies}
 ```
 
-[代码文件0306](../little_demo/fastapi/request_and_response/apps/app06.py)
+[request代码](../little_demo/fastapi/request_and_response/apps/app06.py)
 
 ### 请求静态文件
 
@@ -272,3 +272,84 @@ app.mount("/statics",StaticFiles(directory="statics"))
 async def create_item(item:Item):
     ...
 ```
+
+Fastapi将使用response_model参数来声明用于响应的模型
+
+- 将输出转换为response_model中声明的数据类型
+- 验证数据结构和类型
+- 将输出数据类型限制为定义的类型
+- 添加到Openapi中
+- 在自动文档中使用response_model
+
+```python
+class UserIn(BaseModel):
+    username:str
+    password:str
+    email:EmailStr
+    full_name:Union[str,None]=None
+
+class UserOut(BaseModel):
+    username:str
+    email:EmailStr
+    full_name:Union[str,None]=None
+
+@app07.post("/user2",response_model=UserOut) # 指定输出类型为UserOut
+def create_user(user:UserIn):
+    # 数据库业务操作#
+    return user
+```
+
+以上的输出会比输入少password
+
+#### response_model_exclude_unset
+
+Fastapi可以利用`response_model_exclude_unset`参数来忽略返回的结果。即忽略有默认值时不返回默认值的结果。
+
+```python
+class Item(BaseModel):
+    name:str
+    description:Union[str,None]=None
+    price:float
+    tax:float=10.5
+    tags:list[str]=[]
+
+items = {
+    "foo":{"name":"Foo","price":50.2},
+    "bar":{"name":"Bar","description":"The bartenders","price":62,"tax":20.2},
+    "baz":{"name":"Baz","description":None,"price":50.2,"tax":10.5,"tags":[]}
+}
+
+@app07.get("/otems/{item_id}",response_model=Item,response_model_exclude_unset=True)
+async def read_item(item_id:str):
+    return items[item_id]
+```
+
+response_model_exclude_unset=False时，输入foo返回
+```{"name":"Foo","description":None,"price":50.2,"tax":10.5,"tags":[]}```
+
+response_model_exclude_unset=True时，输入foo返回
+```"foo":{"name":"Foo","price":50.2}```
+
+即response_model_exclude_unset=True时，返回的响应体中只有修改的部分返回，没有修改和默认值的部分被排除了。
+
+此外还有`response_model_exclude_defaults`和`response_model_exclude_none`参数用于排除默认值和None值。
+
+#### include & exclude
+
+`response_model_include`和`response_model_exclude`参数用于在响应体中包含和排除某些字段。
+
+设置`response_model_include`时响应体只包含设置的字段。
+
+设置`response_model_exclude`时响应体会排除设置的字段。
+
+```python
+@app07.get("/items2/{item_id}",response_model=Item,response_model_exclude={"description"})
+async def read_item2(item_id:str):
+    return items[item_id]
+
+@app07.get("/items3/{item_id}",response_model=Item,response_model_include={"name","price"})
+async def read_item3(item_id:str):
+    return items[item_id]
+```
+
+[响应模型参数代码](../little_demo/fastapi/request_and_response/apps/app07.py)
