@@ -68,7 +68,7 @@ urls.py
 ```python
 from fastapi import APIRouter
 
-shop = APIRouter()
+shop = APIRouter() # APIRouter() 参数中也可以使用prefix参数
 
 @shop.get("/food")
 def shop_food():
@@ -473,3 +473,234 @@ jinja2的for循环结构
 
 [jinja2模板代码](../little_demo/fastapi/jinja2/main.py)
 [jinja2模板](../little_demo/fastapi/jinja2/templates/index.html)
+
+## ORM
+
+对象关系映射（英语：Object Relational Mapping，简称ORM，或O/RM，或O/R mapping），是一种程序技术，用于实现面向对象编程语言里不同类型系统的数据之间的转换。从效果上说，它其实是创建了一个可在编程语言里使用的--“虚拟对象数据库”。
+
+Fastapi也可以使用ORM技术来对数据库进行操作，目前主要使用的ORM有SQLAlchemy和TortoiseORM等。
+
+这里主要使用TortoiseORM。
+
+安装TortoiseORM
+
+```bash
+pip install tortoise-orm
+
+# 安装数据库驱动
+pip install tortoise-orm[asyncpg]   # pg
+pip install tortoise-orm[aiomysql]  # mysql
+pip install tortoise-orm[asyncmy]   # mysql
+# 除此之外，还支持：aiosqlite
+```
+
+### 创建模型
+
+其实就是将数据模型中的表和关系等，以ORM类的方式表示出来
+
+以选课系统为例
+
+```python
+from tortoise.models import Model
+from tortoise import fields
+
+class Student(Model):
+    id = fields.IntField(pk=True,description="学号") # 主键
+    name = fields.CharField(max_length=32, description="姓名")
+    pwd = fields.CharField(max_length=32, description="密码")
+    # 一对多
+    clas = fields.ForeignKeyField(model_name="models.Clas",related_name="strudents") # 外键
+    # 多对多
+    courses = fields.ManyToManyField(model_name="models.Course",related_name="strudents")
+
+class Clas(Model):
+    id = fields.IntField(pk=True) # 主键
+    name = fields.CharField(max_length=32, description="班级名称")
+
+class Course(Model):
+    id = fields.IntField(pk=True) # 主键
+    name = fields.CharField(max_length=32, description="课程名称")
+    
+    teacher = fields.ForeignKeyRelation(model_name="models.Teacher",related_name="strudents") # 外键
+
+class Teacher(Model):
+    id = fields.IntField(pk=True) # 主键
+    name = fields.CharField(max_length=32, description="姓名")
+    pwd = fields.CharField(max_length=32, description="密码")
+```
+
+[ORM模型代码](../little_demo/fastapi/orm_stu_sys/models.py)
+
+### aerich迁移工具
+
+首先准备tortoiseorm配置文件和主函数
+
+配置文件setting.py
+```python
+TORTOISE_ORM={
+        'connections':{# 数据库连接配置
+            'default':{
+                'engine':'tortoise.backends.mysql', #mysql
+                # 'engine':'tortoise.backends.asyncpg', #pg
+                'credentials':{
+                    'host':'127.0.0.1',
+                    'port':'3306',
+                    'user':'root',
+                    'password':'root',
+                    'database':'fastapi_learn',
+                    'minsize':1,
+                    'maxsize':5,
+                    'charset':'utf8mb4',
+                    'echo':True
+                }
+            }
+        },
+        'apps':{
+            'models':{
+                'models':['models','aerich.models',], # 加载模组类，aerich迁移还需要加'aerich.models'
+                'default_connection':'default' 
+            }
+        },
+        'use_tz':False,
+        'timezone':'Asia/Shanghai'
+    }
+```
+
+main.py
+```python
+from fastapi import FastAPI
+import uvicorn
+from tortoise.contrib.fastapi import register_tortoise
+
+from settings import TORTOISE_ORM
+
+app = FastAPI()
+
+register_tortoise(
+    app=app,
+    config=TORTOISE_ORM,
+    # generate_schemas=True, # 如果数据库/schema为空，自动创建数据库/schema，生产环境一般不开
+    # add_exception_handlers=True, # 生产环境不开，会泄露调试信息
+)
+
+if __name__ == '__main__':
+    uvicorn.run("main:app")
+```
+
+aerich是一种ORM迁移工具，需结合tortoise框架使用。
+
+安装aerich
+
+```bash
+pip install aerich
+```
+
+#### 1. 初始化配置（只需要使用一次）
+
+```bash
+aerich init -t settings.TORTOISE_ORM # TORTOISE_ORM配置文件位置
+```
+
+在settings.py文件也就是配置的文件目录下执行。
+
+初始化完成后生成pyproject.toml文件和migrations文件夹
+- pyproject.toml 保存配置文件路径
+- migrations 存放迁移文件
+
+#### 2. 初始化数据库（一般只需要使用一次）
+
+```bash
+aerich init-db
+```
+
+初始化数据库之后，会在数据库中生成对应的表。
+
+如果TORTOISE_ORM配置文件中的models改了名，则执行这条命令的时候需要加上`--app`参数，来指定修改的地方。
+
+#### 3. 更新模型并进行迁移
+
+首先修改model类，重新生成迁移文件，比如添加一个字段
+```python
+class xxx(Model):
+    ...
+    xxx = fields.CharField(max_length=255)
+```
+```bash
+aerich migrate [--name] (标记修改操作)
+
+aerich migrate
+或者
+aerich migrate --name add_column
+```
+执行aerich migrate之后会在migrations中生成对应文件
+
+之后执行upgrade/downgrade来应用/撤回数据库中的更改
+
+```bash
+# 升级
+serich upgrade
+# 降级
+serich downgrade
+```
+
+#### 4. 查看历史记录
+
+```bash
+aerich history
+```
+
+### ORM增删改查
+
+#### API接口
+
+应用程序编程接口（英语：Application Programming Interface，简称：API），是一些预先定义的函数，目的是提供应用程序与开发人员基于某软件或硬件得以访问一组例程的能力，而又无需访问源码，或理解内部工作机制的细节。
+
+即应用程序对外提供的一个执行程序的入口。
+
+#### RESTful规范
+
+REST全称是Representational State Transfer，通常译为表征性状态转移。 
+
+RESTful是一种定义Web API接口的设计风格，尤其适用于前后端分离的应用模式中。
+
+这种风格的理念认为后端开发任务就是提供数据的，对外提供的是数据资源的访问接口，所以在定义接口时，客户端访问的URL路径就表示这种要操作的数据资源。事实上，我们可以使用任何一个框架都可以实现符合restful规范的API接口。
+
+简单来说就是客户端和服务器交互的时候，使用HTTP的不同请求方法代表不同动作
+
+- GET 获取资源
+- POST 新建资源
+- PUT 更新资源
+- DELETE 删除资源
+
+而对学生系统，其相关内容可以如下表示。
+
+|请求方法|请求地址|操作|
+|---|---|---|
+|GET|/students|获取所有学生|
+|POST|/students|增加学生|
+|GET|/strdents/1|获取编号为1的学生|
+|PUT|/strdents/1|修改编号为1的学生|
+|DELETE|/strdents/1|删除编号为1的学生|
+
+其它规范参考下文
+
+[Restful规范](https://www.cnblogs.com/97zs/p/18146070)
+
+#### 接口开发
+
+根据上面的RESTful规则进行开发
+
+```python
+from fastapi import APIRouter
+
+student_api=APIRouter(prefix="/student")
+
+# 查看所有学生
+@student_api.get("/s")
+def getAllStudent():
+    ...
+    return {}
+...
+```
+
+##### ORM查询
