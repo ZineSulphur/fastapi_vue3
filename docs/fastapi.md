@@ -353,3 +353,123 @@ async def read_item3(item_id:str):
 ```
 
 [响应模型参数代码](../little_demo/fastapi/request_and_response/apps/app07.py)
+
+## jinja2模板
+
+模板简单来说就是一个其中包含占位变量表示动态部分的文件，模板文件在经过动态赋值后，返回给用户。
+
+jinja2是Flask作者开发的一个模板系统，起初是仿django模板，由于其灵活快速和安全等优点被广泛使用。
+
+jinja2主要语法
+
+1. 变量 `{{ }}`
+2. 控制结构 `{% %}`
+3. 过滤器 `{{|}}`
+4. 注释 `{# #}`
+
+### 变量
+
+jinja2模板会替换html等模板文件中的{{ xxx }}内容作为变量，同时可以使用{{ xxx.xx }}来读取列表和字典等变量的值。
+
+```python
+app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/index")
+def index(request:Request):
+    name = "root"
+    age = 32
+    books = ["聊斋","书","好多书"]
+    person = {"name":"a","age":12,"gender":"male"}
+    return templates.TemplateResponse(
+        "index.html", # 模板文件
+        {
+            "request":request,
+            "user":name,
+            "age":age,
+            "books":books,
+            "person":person
+        } # context上下文对象
+    )
+```
+
+templates/html模板文件中的内容
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>用户名：{{ user }}</p>
+<p>年龄：{{ age }}</p>
+<p>一些书：{{ books }}</p>
+<ul>
+    <li>第一本书：{{ books.0 }}</li>
+    <li>第二本书：{{ books.1 }}</li>
+    <li>第三本书：{{ books.2 }}</li>
+</ul>
+<p>一个人：{{ person }}</p>
+<p>姓名：{{ person.name }}</p>
+<p>年龄：{{ person.age }}</p>
+<p>性别：{{ person.gender }}</p>
+</body>
+</html>
+```
+
+### 过滤器
+
+变量可以通过过滤器进行修改，过滤器可以认为是jinja2的内置函数和字符串处理函数。
+
+常用过滤器有：
+
+|过滤器|说明|
+|---|---|
+|capitialize|首字母大小|
+|upper|转换成大写|
+|lower|转换成小写|
+|title|每个单词首字母大写|
+|trim|去除首尾空格|
+|striptags|渲染前删除值中的HTML标签|
+|join|拼接字符串|
+|round|默认四舍五入，可以用参数控制|
+|safe|渲染时值不转义|
+
+在使用时只需要使用管道|即可使用过滤器
+
+```jinja
+{{ 'abc'| catialize }} # Abc
+{{ 'abc'| upper }} # ABC
+{{ 'hello world'| title }} # Hello World
+{{ 'hello world'| replace('world','there') | upper }} # HELLO THERE
+{{ 18.18 | round | int }} # 18
+```
+
+### 控制结构
+
+#### 分支
+
+jinja2的if分支结构
+
+```jinja
+{% if xxx %}
+    ...
+{% else %}
+    ...
+{% endif %}
+```
+
+#### 循环
+
+jinja2的for循环结构
+
+```jinja
+{% for book in books %}
+    <p>{{ book }}</p>
+{% endfor %}
+```
+
+[jinja2模板代码](../little_demo/fastapi/jinja2/main.py)
+[jinja2模板](../little_demo/fastapi/jinja2/templates/index.html)

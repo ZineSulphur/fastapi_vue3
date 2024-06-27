@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>用户名：{{ user|upper }}</p>
+<p>年龄：{{ age }}</p>
+<p>一些书：{{ books }}</p>
+<ul>
+    <li>第一本书：{{ books.0 }}</li>
+    <li>第二本书：{{ books.1 }}</li>
+    <li>第三本书：{{ books.2 }}</li>
+</ul>
+<p>一个人：{{ person }}</p>
+<p>姓名：{{ person.name }}</p>
+<p>年龄：{{ person.age }}</p>
+<p>性别：{{ person.gender }}</p>
+
+<p>pi：{{ pi|round(3) }}</p>
+
+<p>影视区</p>
+{% if age > 18 %}
+    <ul>
+        <li>日韩电视剧</li>
+        <li>欧美电视剧</li>
+        <li>国产电视剧</li>
+    </ul>
+{% else %}
+    <ul>
+        <li>日韩动画</li>
+        <li>欧美动画</li>
+        <li>国产动画</li>
+    </ul>
+{% endif %}
+
+<hr>
+<ul>
+    {% for book in books %}
+        <li>{{ book }}</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
