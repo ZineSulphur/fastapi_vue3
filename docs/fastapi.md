@@ -8,7 +8,7 @@
 
 其中使用fastapi启动程序，然后在main函数中使用uvicorn.run启动web页面，然后我们可以使用get方法来得到一些数据，验证自己的代码。
 
-[quickstart代码](../little_demo/fastapi/quickstart.py)
+[quickstart代码url](../little_demo/fastapi/quickstart.py)
 
 ## 路径操作
 
@@ -43,7 +43,7 @@ fastapi路径操作装饰器方法参数
 )
 ```
 
-[路径操作装饰器代码](../little_demo/fastapi/route_decorator.py)
+[路径操作装饰器代码url](../little_demo/fastapi/route_decorator.py)
 
 ### 路由分发
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     uvicorn.run("main:app")
 ```
 
-[路由分发代码](../little_demo/fastapi/include_router/main.py)
+[路由分发代码url](../little_demo/fastapi/include_router/main.py)
 
 ## 请求与响应
 
@@ -132,7 +132,7 @@ def get_user(user_id):
     return {"user_id" : user_id}
 ```
 
-[路径参数代码](../little_demo/fastapi/request_and_response/apps/app01.py)
+[路径参数代码url](../little_demo/fastapi/request_and_response/apps/app01.py)
 
 ### 查询参数
 
@@ -148,7 +148,7 @@ async def search_jobs(kd:str,city:Union[str, None] = None, xl:Optional[str] = No
 
 其中city和xl在路径参数"/jobs/{kd}"不存在，它们就被解释为查询参数。
 
-[查询参数代码](../little_demo/fastapi/request_and_response/apps/app02.py)
+[查询参数代码url](../little_demo/fastapi/request_and_response/apps/app02.py)
 
 ### 请求体数据
 
@@ -190,7 +190,7 @@ async def data(data:Data):
     return data
 ```
 
-[请求体代码](../little_demo/fastapi/request_and_response/apps/app03.py)
+[请求体代码url](../little_demo/fastapi/request_and_response/apps/app03.py)
 
 ### form表单
 
@@ -203,7 +203,7 @@ async def reg(username:str=Form(),password:str=Form()):
     return {"username":username}
 ```
 
-[form代码](../little_demo/fastapi/request_and_response/apps/app04.py)
+[form代码url](../little_demo/fastapi/request_and_response/apps/app04.py)
 
 ### 文件上传
 
@@ -231,7 +231,7 @@ async def get_uploadFiles(files:list[UploadFile]):
     return {"names":[file.filename for file in files]}
 ```
 
-[文件上传代码](../little_demo/fastapi/request_and_response/apps/app05.py)
+[文件上传代码url](../little_demo/fastapi/request_and_response/apps/app05.py)
 
 ### Request对象
 
@@ -246,7 +246,7 @@ async def items(request:Request):
             "cookies":request.cookies}
 ```
 
-[request代码](../little_demo/fastapi/request_and_response/apps/app06.py)
+[request代码url](../little_demo/fastapi/request_and_response/apps/app06.py)
 
 ### 请求静态文件
 
@@ -352,7 +352,7 @@ async def read_item3(item_id:str):
     return items[item_id]
 ```
 
-[响应模型参数代码](../little_demo/fastapi/request_and_response/apps/app07.py)
+[响应模型参数代码url](../little_demo/fastapi/request_and_response/apps/app07.py)
 
 ## jinja2模板
 
@@ -471,8 +471,8 @@ jinja2的for循环结构
 {% endfor %}
 ```
 
-[jinja2模板代码](../little_demo/fastapi/jinja2/main.py)
-[jinja2模板](../little_demo/fastapi/jinja2/templates/index.html)
+[jinja2模板代码url](../little_demo/fastapi/jinja2/main.py)
+[jinja2模板url](../little_demo/fastapi/jinja2/templates/index.html)
 
 ## ORM
 
@@ -529,7 +529,7 @@ class Teacher(Model):
     pwd = fields.CharField(max_length=32, description="密码")
 ```
 
-[ORM模型代码](../little_demo/fastapi/orm_stu_sys/models.py)
+[ORM模型代码url](../little_demo/fastapi/orm_stu_sys/models.py)
 
 ### aerich迁移工具
 
@@ -862,6 +862,8 @@ async def deleteStudent(id:int):
         raise HTTPException(status_code=404,detail=f"Student id={id} not found.")
     return {}
 ```
+
+[ORM增删改查代码url](../little_demo/fastapi/orm_stu_sys/api/student.py)
 
 ## 中间件
 
