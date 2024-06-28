@@ -782,3 +782,57 @@ async def getAllStudent(request:Request):
 ```
 
 ##### 添加表记录
+
+使用ORM模型类的create方法进行SQL的Insert操作。
+
+```python
+# 输入学生信息类
+class StudentIn(BaseModel):
+    id:int
+    name:str
+    pwd:str
+    clas_id:int
+    courses:list[int]=[]
+
+# 添加学生
+@student_api.post("/")
+async def addStudent(stu_in:StudentIn):
+    # 插入数据库
+    # 方法1
+    stu = Student(id=stu_in.id,name=stu_in.name,pwd=stu_in.pwd,clas_id=stu_in.clas_id)
+    await stu.save()
+    # 方法2
+    stu = await Student.create(id=stu_in.id,name=stu_in.name,pwd=stu_in.pwd,clas_id=stu_in.clas_id)
+    return stu
+```
+
+##### 多对多查询添加
+
+在插入之后，我们发现虽然student表中有新增内容，但是多对多表student_course中没有新增信息，所以我们也需要在里面新增信息。
+
+```python
+# 添加学生
+@student_api.post("/")
+async def addStudent(stu_in:StudentIn):
+    # 插入数据库
+    stu = await Student.create(id=stu_in.id,name=stu_in.name,pwd=stu_in.pwd,clas_id=stu_in.clas_id)
+    # 多对多
+    courses = await Course.filter(id__in=stu_in.courses) # 查询学生选课id是否在课程中
+    await stu.courses.add(*courses) # *打散
+    return stu
+```
+
+查询
+
+```python
+# 一对多查询
+    stu = await Student.get(id=1)
+    print(await stu.clas.values('name')) # 获取一个学生对应班级名称
+    stus5 = await Student.all().values("name","clas__name") # 查看所有学生班级名称 # clas__name中__为外键查询
+    # 多对多
+    print(await stu.courses.all().values("name","teacher__name")) # 查询一个学生所有课程
+    stus6 = await Student.all().values("name","course__name") # 查看所有学生所有课程名称
+```
+
+##### 编辑接口
+
