@@ -1056,6 +1056,10 @@ if __name__ == '__main__':
 
 现在我们启动fastapi后端，然后用浏览器直接打开html文件。在没有cors中间件的时候，点击click me触发脚本，在response页面中前端代码会报错。而配置了cors中间件之后，就可以正常获得服务器资源。
 
+[CORS代码url](../little_demo/fastapi/cors_learn/main.py)
+
+[CORS html url](../little_demo/fastapi/cors_learn/index.html)
+
 ## 参考
 
 [fastapi框架快速学习](https://www.bilibili.com/video/BV1Ya4y1D7et/)
