@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+    </head>
+    <body>
+        <p>click me</p>
+        <script>
+            $("p").click(function (){
+                $.ajax({
+                    url:"http://127.0.0.1:8000/user",
+                    success:function (res) {
+                        console.log(res)
+                        console.log(res.user)
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>

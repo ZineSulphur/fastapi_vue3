@@ -940,3 +940,77 @@ m2 response
 m1 response
 ```
 
+[中间件代码url](../little_demo/fastapi/middleware/main.py)
+
+### CORS中间件
+
+CORS，全称Cross-Origin Resource Sharing，是一种允许当前域（domain）的资源（比如html/js/web service）被其他域（domain）的脚本请求访问的机制，通常由于同域安全策略（the same-origin security policy）浏览器会禁止这种跨域请求导致的。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+    </head>
+    <body>
+        <p>click me</p>
+        <script>
+            $("p").click(function (){
+                $.ajax({
+                    url:"http://127.0.0.1:8000/user",
+                    success:function (res) {
+                        console.log(res)
+                        console.log(res.user)
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>
+```
+
+自己实现CORS
+```python
+@app.middleware('http')
+async def CORSMiddleware(request:Request, call_next):
+    response = await call_next(request)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+```
+
+插件实现
+```python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+
+app = FastAPI()
+
+orgins = ['http://localhost:8000']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=orgins, # '*':表示所有客户端,[]为客户端列表
+    allow_credentials=True,
+    allow_methods=['GET','POST'],
+    allow_headers=['*'],
+)
+
+@app.get('/user')
+def get_user():
+    print('get_user run')
+    return {
+        'user':'current user'
+    }
+
+if __name__ == '__main__':
+    uvicorn.run("main:app")
+```
+
+现在我们启动fastapi后端，然后用浏览器直接打开html文件。在没有cors中间件的时候，点击click me触发脚本，在response页面中前端代码会报错。而配置了cors中间件之后，就可以正常获得服务器资源。
+
+## 参考
+
+[fastapi框架快速学习](https://www.bilibili.com/video/BV1Ya4y1D7et/)
