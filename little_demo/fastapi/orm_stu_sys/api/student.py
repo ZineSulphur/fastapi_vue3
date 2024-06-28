@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from pydantic import BaseModel
@@ -80,10 +80,22 @@ async def addStudent(stu_in:StudentIn):
 
 # 更新{id}学生
 @student_api.put("/{id}")
-def updateStudent(id:int):
-    return {}
+async def updateStudent(id:int,stu_in:StudentIn):
+    data = stu_in.model_dump()
+    courses = data.pop("courses") # 取出多对多部分
+    data.pop("id") # 我的mysql设置不能更新主键，故去除主键
+    await Student.filter(id=id).update(**data) # 更新表
+    # 设置多对多
+    stu = await Student.get(id=stu_in.id)
+    c_courses = await Course.filter(id__in=courses)
+    await stu.courses.clear() # 清楚关系
+    await stu.courses.add(*c_courses) # 添加关系
+    return stu
 
 # 删除{id}学生
 @student_api.delete("/{id}")
-def deleteStudent(id:int):
+async def deleteStudent(id:int):
+    deleteCount = await Student.filter(id=id).delete()
+    if not deleteCount:
+        raise HTTPException(status_code=404,detail=f"Student id={id} not found.")
     return {}

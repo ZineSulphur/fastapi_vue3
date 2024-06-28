@@ -836,3 +836,35 @@ async def addStudent(stu_in:StudentIn):
 
 ##### 编辑接口
 
+```python
+# 更新{id}学生
+@student_api.put("/{id}")
+async def updateStudent(id:int,stu_in:StudentIn):
+    data = stu_in.model_dump()
+    courses = data.pop("courses") # 取出多对多部分
+    data.pop("id") # 我的mysql设置不能更新主键，故去除主键
+    await Student.filter(id=id).update(**data) # 更新表
+    # 设置多对多
+    stu = await Student.get(id=stu_in.id)
+    c_courses = await Course.filter(id__in=courses)
+    await stu.courses.clear() # 清楚关系
+    await stu.courses.add(*c_courses) # 添加关系
+    return stu
+```
+
+##### 删除接口
+
+```python
+@student_api.delete("/{id}")
+async def deleteStudent(id:int):
+    deleteCount = await Student.filter(id=id).delete()
+    if not deleteCount:
+        raise HTTPException(status_code=404,detail=f"Student id={id} not found.")
+    return {}
+```
+
+## 中间件
+
+中间件是介于应用系统和系统软件之间的一类软件，它使用系统软件所提供的基础服务（功能），衔接网络上应用系统的各个部分或不同的应用，能够达到资源共享、功能共享的目的。
+
+中间件主要在每个请求在处理之前，响应之后工作。
