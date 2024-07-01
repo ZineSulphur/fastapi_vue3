@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+            width: 600px;
+            color: #8f8e8e;
+            text-align: center;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background: #F5F5F5;
+        }
+
+        table tr {
+            height: 30px;
+            line-height: 30px;
+            border: 1px solid #ececec;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <table>
+            <thead>
+                <tr>
+                    <!-- <td><input type="checkbox" v-model="data.selected" @change="selectAll"></td> -->
+                    <td><input type="checkbox" v-model="data.selected"></td>
+                    <td>商品</td>
+                    <td>单价</td>
+                    <td>库存</td>
+                    <td colspan="2">操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(value, index) in data.list" :key="index">
+                    <!-- <td><input type="checkbox" :value="value" v-model="data.checkboxList" @change="checkSelect"></td> -->
+                    <td><input type="checkbox" :value="value" v-model="data.checkboxList"></td>
+                    <td>{{ value.name }}</td>
+                    <td>{{ value.price }}</td>
+                    <td>{{ value.stock }}</td>
+                    <td>
+                        <button @click="sub(value)">-</button>
+                        {{ value.number }}
+                        <button @click="add(value)">+</button>
+                    </td>
+                    <td><button @click="del(index,value.id)">删除</button></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>总价 {{ totalPrice() }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <script type="module">
+        import {createApp,reactive,watch,computed} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const data = reactive({
+                    selected:false,
+                    checkboxList:[],
+                    list:[
+                        {id:1,name:"铅笔",price:2,number:1,stock:30},
+                        {id:2,name:"毛笔",price:10,number:1,stock:20},
+                        {id:3,name:"钢笔",price:15,number:1,stock:15}
+                    ]
+                })
+
+                /*
+                //全选
+                const selectAll = ()=>{
+                    if(data.selected==true){
+                        data.checkboxList=data.list
+                    }else{
+                        data.checkboxList=[]
+                    }
+                }
+
+                // 勾选单个
+                const checkSelect = ()=>{
+                    if(data.checkboxList.length == data.list.length && data.list.length != 0){
+                        data.selected = true
+                    }else{
+                        data.selected = false
+                    }
+                }
+                */
+                // watch优化上面的@change selectAll
+                let selectAllFlag=true
+                watch(()=>data.selected,(newValue,oldValue)=>{
+                    if(data.selected==true){
+                        data.checkboxList=data.list
+                    }else{
+                        if(selectAllFlag){
+                            data.checkboxList=[]
+                        }
+                    }
+                })
+                // watch优化上面的@change checkSelect
+                watch(()=>data.checkboxList,(newValue,oldValue)=>{
+                    if(data.checkboxList.length == data.list.length && data.list.length != 0){
+                        data.selected = true
+                        selectAllFlag=true
+                    }else{
+                        data.selected = false
+                        selectAllFlag=false
+                    }
+                })
+
+                /*
+                // 总价
+                const totalPrice = ()=>{
+                    let total = 0
+                    for(let i = 0;i<data.checkboxList.length;i++){
+                        total+=data.checkboxList[i].price * data.checkboxList[i].number
+                    }
+                    return total
+                }
+                */
+                //计算属性优化上面的函数
+                const totalPrice=computed(()=>{
+                    /*
+                        reduce方法为迭代器，用于对数组进行迭代操作，将操作结果累加到一个初始值上
+                        reduce参数为累加函数和初始值
+                        total累加器
+                        item当前元素
+                    */
+                    return function(){
+                        return data.checkboxList.reduce((total,item)=>total+item.price*item.number, 0)
+                    } 
+                })
+
+                const sub = (value)=>{
+                    if(value.number>0){
+                        value.number--
+                    }
+                }
+
+                const add = (value)=>{
+                    if(value.number<value.stock){
+                        value.number++
+                    }
+                }
+
+                const del = (index,id)=>{
+                    data.list.splice(index,1)
+                    let newArr = data.checkboxList.filter((value,index)=>{
+                        return value.id!=id
+                    })
+                    data.checkboxList = newArr
+
+                    // checkSelect()
+                }
+
+                return {
+                    data,
+                    // selectAll,
+                    // checkSelect,
+                    totalPrice,
+                    sub,
+                    add,
+                    del
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

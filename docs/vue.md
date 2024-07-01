@@ -634,6 +634,19 @@ Vue.js 中的计算属性是基于它的响应式系统来实现的，它可以�
 </body>
 ```
 
+计算属性返回的是属性，如果需要返回可以调用函数则可以
+```html
+<script type="module">
+    const sum = computed(() => {
+        console.log("sum") //打印一次
+            return function(){
+                return data.x + data.y
+            }
+    })
+</script>
+```
+然后在其它代码中使用sum()调用
+
 [computed代码](../little_demo/vue3/part1/computed.html)
 
 ### 侦听器watch
@@ -785,3 +798,8 @@ vue 中 watch 是一种响应式函数，用于监听数据属性值的变化并
 
 ## 案例
 
+[图片轮播](../little_demo/vue3/part2/image_show.html)
+
+[记事本](../little_demo/vue3/part2/note.html)
+
+[购物车](../little_demo/vue3/part2/cart.html)
