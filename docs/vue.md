@@ -803,3 +803,9 @@ vue 中 watch 是一种响应式函数，用于监听数据属性值的变化并
 [记事本](../little_demo/vue3/part2/note.html)
 
 [购物车](../little_demo/vue3/part2/cart.html)
+
+## 参考
+
+[Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
+
+[vue.js官网](https://cn.vuejs.org/)
