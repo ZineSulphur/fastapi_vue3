@@ -10,8 +10,15 @@
         v-show:{{ web.show }}
         <hr>
         <p v-show="web.show">你看见我啦</p>
+        <p v-if="web.show">你又看见我啦</p>
 
         <button @click="toggle">切换显示状态</button>
+        <hr>
+
+        user:{{ web.user }}
+        <p v-if="web.user < 1000">新网站</p>
+        <p v-else-if="web.user >= 1000 & web.user < 10000">优秀网站</p>
+        <p v-else>资深网站</p>
     </div>
 
     <script type="module">
@@ -20,7 +27,8 @@
         createApp({
             setup() {
                 const web = reactive({
-                    show:true
+                    show:true,
+                    user:500
                 })
 
                 const toggle = () => {

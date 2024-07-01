@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .textColor {
+            color:blue;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- :value -->
+        <h3>value="abc.com"</h3>
+        <input type="text" value="abc.com">
+        <h3>v-bind:value="abc.com"</h3>
+        <input type="text" v-bind:value="web.url">
+        <h3>:value="abc.com"</h3>
+        <input type="text" :value="web.url">
+
+        <!-- :src -->
+        <h3>src="abc.jpg"</h3>
+        <img src="abc.jpg">
+        <h3>:src="abc.jpg"</h3>
+        <img :src="web.img">
+
+        <!-- :class -->
+        <h3>class="textColor"</h3>
+        <b class="textColor">color</b>
+        <h3>:class="{textColor:web.frontStatus}"</h3>
+        <b :class="{textColor:web.frontStatus}">color</b>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    url:"abc.com",
+                    img:"abc.jpg",
+                    frontStatus: true
+                })
+
+                return {
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

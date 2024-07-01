@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h3>url: {{ web.url }}</h3>
+        <h3>user: {{ web.user }}</h3>
+
+        实时渲染 <input type="text" v-model="web.url"> <br>
+
+        在失去焦点或按下回车键之后渲染 <input type="text" v-model.lazy="web.url"> <br>
+
+        <!-- 输入 100人, web.user 的值仍为 100 -->
+        输入框的值转换为数字类型 <input type="text" v-model.number="web.user"> <br>
+
+        去除首尾空格 <input type="text" v-model.trim="web.url">
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    url: "abc.com",
+                    user: 10
+                })
+
+                return {
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        爱好
+        <select v-model="hobby">
+            <option value="">请选择</option>
+            <option value="1">写作</option>
+            <option value="2">画画</option>
+            <option value="3">运动</option>
+        </select>
+        <hr>
+
+        年
+        <select v-model="date.year">
+            <option value="">请选择</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+        </select>
+
+        月
+        <select v-model="date.month">
+            <option value="">请选择</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive,ref,watch} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const hobby = ref("") //爱好
+                const date = reactive({ //日期
+                    year: "2023",
+                    month: "10"
+                })
+
+                //监听 hobby
+                watch(hobby, (newValue, oldValue) => {
+                    console.log("oldValue", oldValue, "newValue", newValue)
+
+                    if (newValue == "2") {
+                        console.log("画画")
+                    }
+                })
+
+                //监听 date
+                watch(date, (newValue, oldValue) => {
+                    /*
+                        JS中对象和数组是通过引用传递的, 而不是通过值传递
+                        当修改对象或数组的值时, 实际上修改的是对象或数组的引用, 而不是创建一个新的对象或数组
+                        所以，如果修改了对象或数组的值，那么打印出来的结果则是修改后的值
+                    */
+                    console.log("oldValue", oldValue, "newValue", newValue)
+
+                    if (newValue.year == "2025") {
+                        console.log("2025")
+                    }
+
+                    if (newValue.month == "11") {
+                        console.log("11")
+                    }
+                })
+
+                //监听 date 中的某个属性 year
+                watch(() => date.year, (newValue, oldValue) => {
+                    console.log("oldValue", oldValue, "newValue", newValue)
+
+                    if (date.year == "2024") {
+                        console.log("2024")
+                    }
+                })
+
+                return {
+                    hobby,
+                    date
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

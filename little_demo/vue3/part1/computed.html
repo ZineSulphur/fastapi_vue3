@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h3>add: {{ add() }}</h3>
+        <h3>add: {{ add() }}</h3>
+
+        <h3>sum: {{ sum }}</h3>
+        <h3>sum: {{ sum }}</h3>
+
+        x <input type="text" v-model.number="data.x"> <br>
+        y <input type="text" v-model.number="data.y">
+    </div>
+
+    <script type="module">
+        import {createApp,reactive,computed} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const data = reactive({
+                    x: 10,
+                    y: 20
+                })
+
+                //方法-无缓存
+                let add = () => {
+                    console.log("add") //打印两次
+                    return data.x + data.y
+                }
+
+                //计算属性-有缓存 [计算属性根据其依赖的响应式数据变化而重新计算]
+                const sum = computed(() => {
+                    console.log("sum") //打印一次
+                    return data.x + data.y
+                })
+
+                return {
+                    data,
+                    sum,
+                    add
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

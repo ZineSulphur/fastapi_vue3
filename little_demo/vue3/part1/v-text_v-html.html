@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h3>{{ web.title }}</h3>
+
+        <!-- v-text 将数据解析为纯文本格式 -->
+        <h3 v-text="web.title"></h3>
+
+        <!-- v-html 将数据解析为 html 格式 -->
+        <h3 v-html="web.url"></h3>
+        </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    title:"vue learning",
+                    url:"<i style='color:aqua'>abc.com</i>"
+                })
+
+                return {
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

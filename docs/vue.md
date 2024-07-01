@@ -2,7 +2,9 @@
 
 Vue (发音为 /vjuː/，类似 view) 是一款用于构建用户界面的 JavaScript 框架。它基于标准 HTML、CSS 和 JavaScript 构建，并提供了一套声明式的、组件化的编程模型，帮助你高效地开发用户界面。无论是简单还是复杂的界面，Vue 都可以胜任。
 
-## 创建一个应用
+## 基础内容
+
+### 创建一个应用
 
 这里将创建一个hello world式的vue应用
 
@@ -57,7 +59,7 @@ Vue (发音为 /vjuː/，类似 view) 是一款用于构建用户界面的 JavaS
 
 [quickstart代码](../little_demo/vue3/part1/demo.html)
 
-## 模块化开发
+### 模块化开发
 
 要进行模块化开发的时候，指定script的`type="module"`,在模块中引入文件`https://unpkg.com/vue@3/dist/vue.esm-browser.js`
 
@@ -96,7 +98,7 @@ Vue (发音为 /vjuː/，类似 view) 是一款用于构建用户界面的 JavaS
 
 [模块化开发quickstart代码](../little_demo/vue3/part1/demo_module.html)
 
-## ref 和 reactive
+### ref 和 reactive
 
 ref 主要用于封装基本数据类型和单一引用类型值，如数字、字符串等。
 
@@ -143,7 +145,7 @@ ref修改值需要调用value`a.value=1`进行修改，而reactive不需要`a=1`
 
 [ref和reactive代码](../little_demo/vue3/part1/ref_reactive.html)
 
-## 绑定事件v-on
+### 绑定事件v-on
 
 v-on指令用于注册事件，作用是添加监听与提供事件触发后对应的处理函数。
 
@@ -207,7 +209,7 @@ v-on有两种语法，在提供处理函数的时候既可以直接使用内联�
 
 [绑定事件v-on代码](../little_demo/vue3/part1/v-on.html)
 
-## 显示和隐藏v-show
+### 显示和隐藏v-show
 
 vue中v-show用于控制是否显示元素。v-show=true时显示，false时隐藏。
 
@@ -246,7 +248,540 @@ vue中v-show用于控制是否显示元素。v-show=true时显示，false时隐�
 
 [v-show代码](../little_demo/vue3/part1/v-show.html)
 
-## 条件渲染v-if
+### 条件渲染v-if
 
 v-if也可以实现显示和隐藏。
+
+如果频繁切换显示状态v-if会导致性能下降，此时需使用v-show。
+
+同时可以结合`v-if`,`v-else-if`,`v-else`实现条件渲染。
+
+```html
+<body>
+    <div id="app">
+        v-show:{{ web.show }}
+        <hr>
+        <p v-show="web.show">你看见我啦</p>
+        <p v-if="web.show">你又看见我啦</p>
+
+        <button @click="toggle">切换显示状态</button>
+        <hr>
+
+        user:{{ web.user }}
+        <p v-if="web.user < 1000">新网站</p>
+        <p v-else-if="web.user >= 1000 & web.user < 10000">优秀网站</p>
+        <p v-else>资深网站</p>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    show:true,
+                    user:500
+                })
+
+                const toggle = () => {
+                    web.show = !web.show
+                }
+
+                return {
+                    web,
+                    toggle
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[v-if代码](../little_demo/vue3/part1/v-if.html)
+
+### 动态属性绑定v-bind
+
+v-bind是用于绑定数据和元素属性的
+
+```html
+<body>
+    <div id="app">
+        <!-- :value -->
+        <h3>value="abc.com"</h3>
+        <input type="text" value="abc.com">
+        <h3>v-bind:value="abc.com"</h3>
+        <input type="text" v-bind:value="web.url">
+        <h3>:value="abc.com"</h3>
+        <input type="text" :value="web.url">
+
+        <!-- :src -->
+        <h3>src="abc.jpg"</h3>
+        <img src="abc.jpg">
+        <h3>:src="abc.jpg"</h3>
+        <img :src="web.img">
+
+        <!-- :class -->
+        <h3>class="textColor"</h3>
+        <b class="textColor">color</b>
+        <h3>:class="{textColor:web.frontStatus}"</h3>
+        <b :class="{textColor:web.frontStatus}">color</b>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    url:"abc.com",
+                    img:"abc.jpg",
+                    frontStatus: true
+                })
+
+                return {
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[v-bind代码](../little_demo/vue3/part1/v-bind.html)
+
+### 遍历数组等对象v-for
+
+```html
+<body>
+    <div id="app">
+        <ul>
+            <li v-for="value in data.number">
+                {{ value }}
+            </li>
+        </ul>
+
+        <ul>
+            <li v-for="(value, index) in data.number">
+                index = {{ index }} : value = {{ value }}
+            </li>
+        </ul>
+
+        <ul>
+            <li v-for="(value, key) in data.user">
+                key = {{ key }} : value = {{ value }}
+            </li>
+        </ul>
+        <ul>
+            <li v-for="(value, key, index) in data.user">
+                index = {{ index }} : key = {{ key }} : value = {{ value }}
+            </li>
+        </ul>
+
+        <ul>
+            <template v-for="(value, key, index) in data.user">
+                <li v-if="index == 1">
+                    index = {{ index }} : key = {{ key }} : value = {{ value }}
+                </li>
+            </template>
+        </ul>
+
+        <ul>
+            <li v-for="(value, index) in data.teacher" :title="value.name" :key="value.id">
+                index = {{ index }} : value.id = {{ value.id }} value.name={{ value.name }} value.web={{ value.web }}
+            </li>
+        </ul>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const data = reactive({
+                    number: ["十", "十一", "十二"], //数组
+                    user: { //对象
+                        name: "Luna",
+                        gender: "女"
+                    },
+                    teacher: [ //包含两个对象的数组
+                        { id: 100, name: "a", web: "a.com" },
+                        { id: 101, name: "b", web: "b.com" }
+                    ]
+                })
+
+                return {
+                    data
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[v-for代码](../little_demo/vue3/part1/v-for.html)
+
+### 双向数据绑定v-model
+
+- 单向数据绑定v-bind 当数据发生改变时, 视图会自动更新. 但用户手动更改 input 的值, 数据不会自动更新
+- 双向数据绑定v-model 当数据发生改变时, 视图会自动更新. 当用户手动更改 input 的值, 数据也会自动更新
+
+```html
+<body>
+    <div id="app">
+        <h3>文本框 {{ data.text }}</h3>
+        <h3>单选框 {{ data.radio }}</h3>
+        <h3>复选框 {{ data.checkbox }}</h3>
+        <h3>记住密码 {{ data.remember }}</h3>
+        <h3>下拉框 {{ data.select }}</h3>
+
+        <!-- 单向数据绑定 当数据发生改变时, 视图会自动更新. 但用户手动更改 input 的值, 数据不会自动更新 -->
+        单向数据绑定 <input type="text" :value="data.text">
+
+        <hr>
+        <!-- 
+            双向数据绑定 当数据发生改变时, 视图会自动更新. 当用户手动更改 input 的值, 数据也会自动更新
+            对于 <input type="text">, v-model 绑定的是 input 元素的 value 属性
+        -->
+        双向数据绑定 <input type="text" v-model="data.text">
+
+        <hr>
+        <!-- 
+            单选框
+            对于 <input type="radio">, v-model 绑定的是 input 元素的选中状态
+        -->
+        <input type="radio" v-model="data.radio" value="1">写作
+        <input type="radio" v-model="data.radio" value="2">画画
+
+        <hr>
+        <!-- 
+            复选框
+            对于 <input type="checkbox">, v-model 绑定的是 input 元素的选中状态
+        -->
+        <input type="checkbox" v-model="data.checkbox" value="a">写作
+        <input type="checkbox" v-model="data.checkbox" value="b">画画
+        <input type="checkbox" v-model="data.checkbox" value="c">运动
+
+        <hr>
+        <!-- 记住密码 -->
+        <input type="checkbox" v-model="data.remember">记住密码
+
+        <hr>
+        <!-- 
+            下拉框
+            对于 <select>, v-model 绑定的是 select 元素的选中状态
+        -->
+        <select v-model="data.select">
+            <option value="">请选择</option>
+            <option value="A">写作</option>
+            <option value="B">画画</option>
+            <option value="C">运动</option>
+        </select>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const data = reactive({
+                    text: "text", //文本框
+                    radio: "", //单选框
+                    checkbox: [], //复选框
+                    remember: false, //单个复选框-记住密码
+                    select: "" //下拉框
+                })
+
+                return {
+                    data
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[v-model代码](../little_demo/vue3/part1/v-model.html)
+
+#### v-model修饰符
+
+|修饰符|功能|
+|---|---|
+|lazy|失去焦点或者用户点击回车按钮时才会将后台的数据进行修改|
+|number|将输入的数字转为number类型|
+|trim|去掉字符串首部或者尾部的所有空格|
+
+```html
+<body>
+    <div id="app">
+        <h3>url: {{ web.url }}</h3>
+        <h3>user: {{ web.user }}</h3>
+
+        实时渲染 <input type="text" v-model="web.url"> <br>
+
+        在失去焦点或按下回车键之后渲染 <input type="text" v-model.lazy="web.url"> <br>
+
+        <!-- 输入 100人, web.user 的值仍为 100 -->
+        输入框的值转换为数字类型 <input type="text" v-model.number="web.user"> <br>
+
+        去除首尾空格 <input type="text" v-model.trim="web.url">
+    </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    url: "abc.com",
+                    user: 10
+                })
+
+                return {
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[v-model2代码](../little_demo/vue3/part1/v-model2.html)
+
+### 渲染数据v-text和v-html
+
+v-text按照文件进行渲染，v-html按照html格式渲染
+
+```html
+<body>
+    <div id="app">
+        <h3>{{ web.title }}</h3>
+
+        <!-- v-text 将数据解析为纯文本格式 -->
+        <h3 v-text="web.title"></h3>
+
+        <!-- v-html 将数据解析为 html 格式 -->
+        <h3 v-html="web.url"></h3>
+        </div>
+
+    <script type="module">
+        import {createApp,reactive} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const web = reactive({
+                    title:"vue learning",
+                    url:"<i style='color:aqua'>abc.com</i>"
+                })
+
+                return {
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[v-text_v-html代码](../little_demo/vue3/part1/v-text_v-html.html)
+
+### 计算属性computed
+
+Vue.js 中的计算属性是基于它的响应式系统来实现的，它可以根据 Vue 实例的数据状态来动态计算出新的属性值。在 Vue 组件中，计算属性常用于对数据进行处理和转换，以及动态生成一些需要的数据。
+
+```html
+<body>
+    <div id="app">
+        <h3>add: {{ add() }}</h3>
+        <h3>add: {{ add() }}</h3>
+
+        <h3>sum: {{ sum }}</h3>
+        <h3>sum: {{ sum }}</h3>
+
+        x <input type="text" v-model.number="data.x"> <br>
+        y <input type="text" v-model.number="data.y">
+    </div>
+
+    <script type="module">
+        import {createApp,reactive,computed} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const data = reactive({
+                    x: 10,
+                    y: 20
+                })
+
+                //方法-无缓存
+                let add = () => {
+                    console.log("add") //打印两次
+                    return data.x + data.y
+                }
+
+                //计算属性-有缓存 [计算属性根据其依赖的响应式数据变化而重新计算]
+                const sum = computed(() => {
+                    console.log("sum") //打印一次
+                    return data.x + data.y
+                })
+
+                return {
+                    data,
+                    sum,
+                    add
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[computed代码](../little_demo/vue3/part1/computed.html)
+
+### 侦听器watch
+
+vue 中 watch 是一种响应式函数，用于监听数据属性值的变化并执行回调函数。基本用法是 watch(property, handler)，其中 property 是要监视的属性或属性数组，handler 是回调函数。它还可以配置选项对象，例如 immediate（立即调用）和 deep（深度监听）。watch 适用于需要对数据属性值的变化做出反应的情况，例如更新 ui 或异步加载数据。
+
+- watch显式指定依赖数据，依赖数据更新时执行回调函数
+- 具有一定的惰性lazy 第一次页面展示的时候不会执行，只有数据变化的时候才会执行(设置immediate: true时可以变为非惰性，页面首次加载就会执行）
+- 监视ref定义的响应式数据时可以获取到原值既要指明监视的属性，也要指明监视的回调
+
+```html
+<body>
+    <div id="app">
+        爱好
+        <select v-model="hobby">
+            <option value="">请选择</option>
+            <option value="1">写作</option>
+            <option value="2">画画</option>
+            <option value="3">运动</option>
+        </select>
+        <hr>
+
+        年
+        <select v-model="date.year">
+            <option value="">请选择</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+        </select>
+
+        月
+        <select v-model="date.month">
+            <option value="">请选择</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive,ref,watch} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const hobby = ref("") //爱好
+                const date = reactive({ //日期
+                    year: "2023",
+                    month: "10"
+                })
+
+                //监听 hobby
+                watch(hobby, (newValue, oldValue) => {
+                    console.log("oldValue", oldValue, "newValue", newValue)
+
+                    if (newValue == "2") {
+                        console.log("画画")
+                    }
+                })
+
+                //监听 date
+                watch(date, (newValue, oldValue) => {
+                    /*
+                        JS中对象和数组是通过引用传递的, 而不是通过值传递
+                        当修改对象或数组的值时, 实际上修改的是对象或数组的引用, 而不是创建一个新的对象或数组
+                        所以，如果修改了对象或数组的值，那么打印出来的结果则是修改后的值
+                    */
+                    console.log("oldValue", oldValue, "newValue", newValue)
+
+                    if (newValue.year == "2025") {
+                        console.log("2025")
+                    }
+
+                    if (newValue.month == "11") {
+                        console.log("11")
+                    }
+                })
+
+                //监听 date 中的某个属性 year
+                watch(() => date.year, (newValue, oldValue) => {
+                    console.log("oldValue", oldValue, "newValue", newValue)
+
+                    if (date.year == "2024") {
+                        console.log("2024")
+                    }
+                })
+
+                return {
+                    hobby,
+                    date
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+```
+
+[watch代码](../little_demo/vue3/part1/watch.html)
+
+### 自动侦听器watchEffect
+
+无需指定监听属性的监听器，自动监听器watchEffect。
+
+- watchEffect自动收集依赖数据，依赖数据更新时重新执行自身
+- 立即执行，没有惰性，页面的首次加载就会执行
+- 无法获取到原值，只能得到变化后的值
+- 不用指明监视哪个属性，监视的回调中用到哪个属性就监视哪个属性
+
+```html
+<script type="module">
+        import {createApp,reactive,ref,watchEffect} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const hobby = ref("") //爱好
+                const date = reactive({ //日期
+                    year: "2023",
+                    month: "10"
+                })
+
+                //自动监听
+                watchEffect(() => {
+                    console.log("------ 监听开始")
+
+                    if (hobby.value == "2") {
+                        console.log("画画")
+                    }
+
+                    if (date.year == "2025") {
+                        console.log("2025")
+                    }
+
+                    if (date.month == "11") {
+                        console.log("11")
+                    }
+
+                    console.log("------ 监听结束")
+                })
+
+                return {
+                    hobby,
+                    date
+                }
+            }
+        }).mount("#app")
+    </script>
+```
+
+[watchEffect代码](../little_demo/vue3/part1/watchEffect.html)
+
+## 案例
 
