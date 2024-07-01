@@ -804,6 +804,94 @@ vue 中 watch 是一种响应式函数，用于监听数据属性值的变化并
 
 [购物车](../little_demo/vue3/part2/cart.html)
 
+## 组件
+
+### Vite
+
+#### Vite创建vue3项目
+
+首先按照node.js，然后在需要创建vue项目的文件夹下执行
+
+```sh
+npm create vite@latest
+```
+
+执行时指定项目名称，框架和类型，这里选默认名称，vue，JavaScript
+
+完成之后按照提示执行
+
+```sh
+cd vite-project
+npm install
+npm run dev
+```
+
+默认项目创建完成，之后删除模板内容或者直接修改就可以开始开发了
+
+#### 导入组件
+
+这里将之前的[显示和隐藏](#显示和隐藏v-show)部分的学习代码迁入vue项目中，首先将模板内容放入template中，将script中除了return的内容也放入script中，import的对象改为vue
+
+```vue
+<script setup>
+    import { reactive } from 'vue'
+
+    const web = reactive({
+        show:true
+    })
+
+    const toggle = () => {
+        web.show = !web.show
+    }
+</script>
+
+<template>
+    <h3>v-show:{{ web.show }}</h3>
+    <p v-show="web.show">你看见我啦</p>
+
+    <button @click="toggle">切换显示状态</button>
+</template>
+```
+
+然后在项目文件夹下使用`npm run dev`打开服务器就有网页了。
+
+接下来导入组件，我们在components中创建组件header.vue和foot.vue在其中的template中添加h3
+
+然后回到App.vue中，在script中import文件,然后再template中使用组件即可
+
+header.vue
+```vue
+<template>
+    <h3>header</h3>
+</template>
+
+<script setup>
+
+</script>
+
+<style scoped>
+
+</style>
+```
+
+App.vue
+```vue
+<script setup>
+    import Header from './components/header.vue'
+    import Footer from './components/footer.vue'
+</script>
+
+<template>
+    <Header/>
+
+    <Footer/>
+</template>
+
+<style scoped>
+
+</style>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
