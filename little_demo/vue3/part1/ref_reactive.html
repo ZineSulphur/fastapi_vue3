@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        msg: {{ msg }}
+        
+        <h3>web.title: {{ web.title }}</h3>
+        <h3>web.url: {{ web.url }}</h3>
+        <h3>web.number: {{ number }}</h3>
+    </div>
+
+    <script type="module">
+        import {createApp,reactive,ref} from './vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const number = ref(10) //ref用于存储单个基本类型的数据, 如:数字、字符串等
+                number.value = 20 //使用ref创建的响应式对象, 需要通过.value属性来访问和修改其值
+
+                const web = reactive({ //用于存储复杂数据类型, 如:对象或数组等
+                    title:"vue learning",
+                    url:"url"
+                })
+                web.url = "url" //使用reactive创建的响应式对象, 可以直接通过属性名来访问和修改值
+
+                return {
+                    msg:"success",
+                    number,
+                    web
+                }
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

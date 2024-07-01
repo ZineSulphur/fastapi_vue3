@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 借助 script 标签直接通过 CDN 来使用 Vue -->
+    <script src="vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{ msg }}
+        
+        <h2>{{ web.title }}</h2>
+        <h2>{{ web.url }}</h2>
+    </div>
+
+    <script type="module">
+        const {createApp,reactive} = Vue
+
+        // 创建一个 Vue 应用程序
+        createApp({
+            // Composition API(组合式 API) 的 setup选项 用于设置响应式数据和方法等
+            setup() {
+                const web = reactive({
+                    title:"vue learning",
+                    url:"url"
+                })
+
+                return {
+                    msg:"success",
+                    web
+                }
+            }
+        }).mount("#app") //将 Vue 应用程序挂载(mount) 到 app 元素上
+    </script>
+</body>
+</html>
