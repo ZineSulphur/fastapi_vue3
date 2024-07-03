@@ -3,7 +3,8 @@
 </template>
 
 <script setup>
-
+    const props = defineProps(["name","url"])
+    console.log(props);
 </script>
 
 <style scoped>

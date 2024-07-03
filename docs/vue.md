@@ -892,6 +892,89 @@ App.vue
 </style>
 ```
 
+#### 父传子 defineProps
+
+父传子，即从父组件中往子组件中传递数值。
+
+例如父组件App.vue引用了子组件Header，便可以在template的引用中声明属性`<Header name="abc" url="abc.com" />`，
+
+然后在子组件中的script中使用defineProps获得传递的数值`const props = defineProps(["name","url"])`，我们可以在props中读到父组件传递来的name和url的值。
+
+header.vue
+```vue
+<template>
+    <h3>header</h3>
+</template>
+
+<script setup>
+    const props = defineProps(["name","url"])
+    console.log(props);
+</script>
+```
+
+同理结构体也可以使用相同的方式传递数值。
+
+在父组件App.vue的script中声明对象`const propsWeb = {user:10,url:"www.cba.com"}`，在template中使用v-bind传递`<Footer v-bind="propsWeb" />`，
+
+然后在子组件footer.vue的script中接收数据`const props = defineProps({user:Number,url:String})`
+
+如果需要传递响应式数据，即父组件中数据变化时可以即时传递，可以使用reactive。
+
+App.vue
+```vue
+<script setup>
+    import { reactive } from 'vue'
+    import Header from './components/header.vue'
+    import Footer from './components/footer.vue'
+
+    // const propsWeb = {
+    //     user:10,
+    //     url:"www.cba.com"
+    // }
+
+    const propsWeb = reactive({
+        user:10,
+        url:"www.cba.com"
+    })
+
+
+    const userAdd = ()=>{
+        propsWeb.user++
+        console.log(propsWeb.user)
+    }
+</script>
+
+<template>
+    <Header name="abc" url="abc.com" />
+
+    <p>a text</p>
+
+    <button @click="userAdd">添加用户</button>
+
+    <!-- <Footer v-bind="propsWeb" /> -->
+    <Footer :="propsWeb" />
+</template>
+```
+
+footer.vue
+```vue
+<template>
+    <h3>footer</h3> {{ props.user }}
+</template>
+
+<script setup>
+    const props = defineProps({
+        user:Number,    // 指定数据类型
+        url:{   //详细配置
+            type:String,            // 数据类型
+            required:true,          // 是否为必须传属性，不传在console中有warning
+            default:'default.com'   //默认值
+        }
+    })
+    console.log(props);
+</script>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
