@@ -975,6 +975,64 @@ footer.vue
 </script>
 ```
 
+#### 子传父 defineEmits
+
+子组件也可以传递数值给父组件，即使用defineEmits从子组件往父组件传递，但是defineEmits传递的是事件和对应的数据。
+
+即子组件script中声明对象`const emits = defineEmits(["getWeb","userAdd"])`，执行函数传递方法和数据`emits("getWeb",{name:"abc",url:"abc.com"})`,
+
+父组件template中使用@事件接收子组件传递的事件`<Footer @getWeb="emitsGetWeb" />`，然后再script中就可以得到相关的事件和值了`const emitsGetWeb = (data)=>{web.url = data.url}`
+
+App.vue
+```vue
+<script setup>
+    import { reactive, ref } from 'vue'
+    import Footer from './components/footer.vue'
+    // emits
+    const user = ref(0)
+
+    const web = reactive({
+        name:'abc',
+        url:'abc.com'
+    })
+
+    const emitsGetWeb = (data)=>{
+        console.log(data)
+        web.url = data.url
+    }
+
+    const emitsUserAdd=(data)=>{
+        console.log(data)
+        user.value += data
+    }
+</script>
+
+<template>
+    <Footer @getWeb="emitsGetWeb" @userAdd="emitsUserAdd" />
+    <p>{{ web.url }}</p>
+    <p>Emits {{ user }}</p>
+</template>
+```
+
+footer.vue
+```vue
+<template>
+    <h3>footer</h3>
+    <p></p>
+    <button @click="add">emits添加用户</button>
+</template>
+
+<script setup>
+    // emits
+    const emits = defineEmits(["getWeb","userAdd"])
+    emits("getWeb",{name:"abcd",url:"abcd.com"})
+
+    const add=()=>{
+        emits("userAdd",10)
+    }
+</script>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
