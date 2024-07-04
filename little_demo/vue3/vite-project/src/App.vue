@@ -1,5 +1,5 @@
 <script setup>
-    import { reactive, ref,provide,onMounted,onUpdated } from 'vue'
+    import { reactive, ref,provide,onMounted,onUpdated,toRef,toRefs } from 'vue'
     import Header from './components/header.vue'
     import Footer from './components/footer.vue'
     import son from './components/son.vue';
@@ -56,6 +56,29 @@
         console.log("onUpdated")
     })
     console.log("user:",user.value)
+
+    //toRef
+    /*
+    let {tname,turl} = reactive({
+        name:"abcde",
+        url:"abcde.com"
+    })
+    */
+    let tweb = reactive({
+        name:"abcde",
+        url:"abcde.com"
+    })
+
+    //toRefs将一个响应式对象的所有属性转换为ref对象
+    //let {tname,turl} = toRefs(tweb)
+
+    //toRef将一个响应式对象的某个属性转换为ref变量
+    let turl = toRef(tweb, "url")
+
+    const setUrl = () => {
+        console.log(turl)
+        turl.value = "www.abcde.com"
+    }
 </script>
 
 <template>
@@ -96,6 +119,10 @@
     <hr>
     {{ user }}
     <button @click="user++">添加用户</button>
+
+    <hr>
+    {{ turl }}
+    <button @click="setUrl">设置网址</button>
 </template>
 
 <style scoped>

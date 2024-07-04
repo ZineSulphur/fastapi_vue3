@@ -1219,6 +1219,49 @@ App.vue
 </style>
 ```
 
+#### toRef和toRefs
+
+使用toRef和toRefs将变量的单个和所有属性转换为ref对象
+
+App.vue
+```vue
+<script setup>
+  import { reactive, toRef, toRefs } from 'vue'
+
+  /*
+  let {tname,turl} = reactive({
+    name:"abcde",
+    url:"abcde.com"
+  })
+  */
+  let tweb = reactive({
+    name:"abcde",
+    url:"abcde.com"
+  })
+
+  //toRefs将一个响应式对象的所有属性转换为ref对象
+  //let {tname,turl} = toRefs(tweb)
+
+  //toRef将一个响应式对象的某个属性转换为ref变量
+  let turl = toRef(tweb, "url")
+
+  const setUrl = () => {
+    console.log(turl)
+    turl.value = "www.abcde.com"
+  }
+</script>
+
+<template>
+  {{ turl }}
+
+  <button @click="setUrl">设置网址</button>
+</template>
+
+<style scoped>
+
+</style>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
