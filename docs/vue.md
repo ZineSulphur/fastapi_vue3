@@ -1112,6 +1112,8 @@ grandson.vue
 
 插槽是指可以在父组件内自定义模板片段，在子组件中可以将定义的模板片段插入到子组件的特定位置。
 
+同时可以在子组件的插槽中传递数据到父组件中。
+
 App.vue
 ```vue
 <script setup>
@@ -1121,12 +1123,19 @@ App.vue
 
 <template>
     <h3>App.vue</h3>
+    <!-- 匿名插槽 -->
     <learnslot1>
         <a href="abcd.com">abcd</a>
     </learnslot1>
+    <!-- 具名插槽 -->
     <learnslot2>
         <!-- <template v-slot:url> -->
-        <template #url>
+        <!-- <template #url="data">
+            {{ data.title }}
+            {{ data.user }} -->
+        <template #url={title,user}>
+            {{ title }}
+            {{ user }}
             <a href="abcd.com">网址</a>
         </template>
     </learnslot2>
@@ -1137,12 +1146,10 @@ learnslot1.vue
 ```vue
 <template>
     <h3>learnslot1 子组件</h3>
-
     <slot/>
 </template>
 
 <script setup>
-    
 </script>
 ```
 
@@ -1150,12 +1157,10 @@ learnslot2.vue
 ```vue
 <template>
     <h3>learnslot2 子组件</h3>
-
-    <slot name="url" />
+    <slot name="url" title="abcd" user=100 />
 </template>
 
 <script setup>
-
 </script>
 ```
 

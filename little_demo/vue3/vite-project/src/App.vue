@@ -67,12 +67,19 @@
 
     <hr>
     <h3>App.vue</h3>
+    <!-- 匿名插槽 -->
     <learnslot1>
         <a href="abcd.com">abcd</a>
     </learnslot1>
+    <!-- 具名插槽 -->
     <learnslot2>
         <!-- <template v-slot:url> -->
-        <template #url>
+        <!-- <template #url="data">
+            {{ data.title }}
+            {{ data.user }} -->
+        <template #url={title,user}>
+            {{ title }}
+            {{ user }}
             <a href="abcd.com">网址</a>
         </template>
     </learnslot2>
