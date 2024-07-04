@@ -3,6 +3,8 @@
     import Header from './components/header.vue'
     import Footer from './components/footer.vue'
     import son from './components/son.vue';
+    import learnslot1 from './components/learnslot1.vue';
+    import learnslot2 from './components/learnslot2.vue';
 
     // props
     // const propsWeb = {
@@ -62,6 +64,18 @@
     user:{{ user }}
     <!-- 子组件 -->
     <son/>
+
+    <hr>
+    <h3>App.vue</h3>
+    <learnslot1>
+        <a href="abcd.com">abcd</a>
+    </learnslot1>
+    <learnslot2>
+        <!-- <template v-slot:url> -->
+        <template #url>
+            <a href="abcd.com">网址</a>
+        </template>
+    </learnslot2>
 </template>
 
 <style scoped>

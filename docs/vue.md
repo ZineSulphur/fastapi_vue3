@@ -1108,6 +1108,57 @@ grandson.vue
 </script>
 ```
 
+#### 匿名插槽和具名插槽
+
+插槽是指可以在父组件内自定义模板片段，在子组件中可以将定义的模板片段插入到子组件的特定位置。
+
+App.vue
+```vue
+<script setup>
+    import learnslot1 from './components/learnslot1.vue';
+    import learnslot2 from './components/learnslot2.vue';
+</script>
+
+<template>
+    <h3>App.vue</h3>
+    <learnslot1>
+        <a href="abcd.com">abcd</a>
+    </learnslot1>
+    <learnslot2>
+        <!-- <template v-slot:url> -->
+        <template #url>
+            <a href="abcd.com">网址</a>
+        </template>
+    </learnslot2>
+</template>
+```
+
+learnslot1.vue
+```vue
+<template>
+    <h3>learnslot1 子组件</h3>
+
+    <slot/>
+</template>
+
+<script setup>
+    
+</script>
+```
+
+learnslot2.vue
+```vue
+<template>
+    <h3>learnslot2 子组件</h3>
+
+    <slot name="url" />
+</template>
+
+<script setup>
+
+</script>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
