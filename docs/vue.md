@@ -1033,6 +1033,81 @@ footer.vue
 </script>
 ```
 
+#### 跨组件通信 依赖注入
+
+在 Vue 3 中，provide 和 inject 是两个用于实现依赖注入（Dependency Injection）的 API。依赖注入是一种编程技术，它允许你通过某个提供者（provider）向组件或其子组件注入依赖项（如数据、方法等），而无需显式地在每个组件之间传递它们。
+
+provide和inject用于组件封装的时候，多层组件嵌套的传值问题。
+
+在父组件中使用`provide("name",verb)`提供数据，子组件和子组件的子组件等组件中使用`const verb = inject("name")`接收数据。
+
+同理函数也可以用这个方法注入。
+
+但是这个方法没有办法从子组件传父组件。
+
+App.vue
+```vue
+<script setup>
+    import { reactive, ref,provide } from 'vue'
+    import son from './components/son.vue';
+
+    const user = ref(0)
+    const web = reactive({
+        name:'abc',
+        url:'abc.com'
+    })
+    // provider
+    provide("provideWeb",web)
+    provide("provideUser",user)
+    const puserAdd=()=>{
+        user.value++
+    }
+    provide("provideFuncPUserAdd",puserAdd)
+</script>
+
+<template>
+    <h3>App.vue Top</h3>
+    user:{{ user }}
+    <!-- 子组件 -->
+    <son/>
+</template>
+```
+
+son.vue
+```vue
+<template>
+    <h3>son.vue middle</h3>
+    <!-- 子组件 -->
+     <grandson/>
+</template>
+
+<script setup>
+    import { inject } from 'vue'
+    import grandson from './grandson.vue'
+
+    const user = inject("provideUser")
+    console.log("provideUser",user)
+</script>
+```
+
+grandson.vue
+```vue
+<template>
+    <h3>grandson.vue bottom</h3>
+
+    <button @click="funcPUserAdd">添加用户</button>
+</template>
+
+<script setup>
+    import { inject } from 'vue';
+
+    const web = inject("provideWeb")
+    console.log("provideWeb",web)
+
+    const funcPUserAdd = inject("provideFuncPUserAdd")
+</script>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
