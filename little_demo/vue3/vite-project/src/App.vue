@@ -1,5 +1,5 @@
 <script setup>
-    import { reactive, ref,provide } from 'vue'
+    import { reactive, ref,provide,onMounted,onUpdated } from 'vue'
     import Header from './components/header.vue'
     import Footer from './components/footer.vue'
     import son from './components/son.vue';
@@ -47,6 +47,15 @@
         user.value++
     }
     provide("provideFuncPUserAdd",puserAdd)
+
+    // lifefunc
+    onMounted(() => {
+        console.log("onMounted")
+    })
+    onUpdated(() => {
+        console.log("onUpdated")
+    })
+    console.log("user:",user.value)
 </script>
 
 <template>
@@ -83,6 +92,10 @@
             <a href="abcd.com">网址</a>
         </template>
     </learnslot2>
+
+    <hr>
+    {{ user }}
+    <button @click="user++">添加用户</button>
 </template>
 
 <style scoped>

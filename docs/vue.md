@@ -1164,6 +1164,61 @@ learnslot2.vue
 </script>
 ```
 
+#### 生命周期函数
+
+- 挂载阶段
+  - nBeforeMount
+    - 在组件实例即将被挂载到DOM树之前调用
+    - 此时模板还未编译或渲染到DOM,通常用于执行初始化操作,如:获取异步数据、设置初始属性值等
+  - onMounted
+    - 在组件成功挂载到DOM并完成首次渲染后调用
+    - 此时可以访问和操作DOM元素,并执行与页面交互相关的逻辑
+- 更新阶段
+  - onBeforeUpdate (由于响应式数据变化)
+    - 在组件更新之前即将重新渲染时调用
+    - 可以根据新的参数判断是否需要进行特殊处理,甚至可以选择阻止此次更新过程
+  - onUpdated
+    - 在组件完成更新并重新渲染后调用
+    - 可以基于新的渲染结果处理更新后的数据
+- 卸载阶段
+  - onBeforeUnmount
+    - 在组件从DOM中销毁之前调用
+    - 用于释放资源,如:清理计时器、解绑事件监听器等
+  - onUnmounted
+    - 在组件已经从DOM中移除并销毁后调用，确保组件所占用的所有资源都被正确释放
+- 错误处理
+  - onErrorCaptured
+    - 捕获到组件中的错误时调用于处理错误,如:记录错误日志等
+
+组件挂载的过程:
+- 模板编译:将组件的模板转换为JS代码
+- 渲染:在模板编译后生成的JS代码渲染到页面上,生成虚拟DOM
+- 挂载:在渲染完成后将虚拟DOM挂载到真实的DOM树上,使其在页面上显示出来
+
+App.vue
+```vue
+<script setup>
+    import {  ref,onMounted,onUpdated } from 'vue'
+    // lifefunc
+    const user = ref(0)
+    onMounted(() => {
+        console.log("onMounted")
+    })
+    onUpdated(() => {
+        console.log("onUpdated")
+    })
+    console.log("user:",user.value)
+</script>
+
+<template>
+    {{ user }}
+    <button @click="user++">添加用户</button>
+</template>
+
+<style scoped>
+</style>
+```
+
 ## 参考
 
 [Vue3 学习指南](https://www.dengruicode.com/study?uuid=58893cef7e824a02b16039129d59713c)
