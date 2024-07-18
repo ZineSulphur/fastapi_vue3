@@ -15,5 +15,3 @@ vue3前端代码
 学习的代码demo
   - fastapi
   - vue3
- 
-math sample $a_i$ and $b_i$ and $\hat{p}_{\sigma(i)}(c_i)$ and $\mathcal{L}_{box}(b_i,\hat{b}_{\sigma(i)})$.
